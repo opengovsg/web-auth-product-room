@@ -1,18 +1,29 @@
 const sqlite3 = require('sqlite3').verbose()
 const db = new sqlite3.Database('./db.sqlite')
 
-db.run(
-  `CREATE TABLE IF NOT EXISTS users_pw (username TEXT PRIMARY KEY, passwordHash TEXT);
-   CREATE TABLE IF NOT EXISTS users_otp (email TEXT PRIMARY KEY, otpHash TEXT, attempts INTEGER, lastSentAt INTEGER);
-   CREATE TABLE IF NOT EXISTS sessions (sid TEXT PRIMARY KEY, data TEXT, expiresAt INTEGER);`,
-  (err) => {
-    if (err) {
-      console.error(err)
-      return
-    }
-    console.log('Database initialized')
-  },
-)
+async function init() {
+  return new Promise((resolve, reject) => {
+    db.serialize(() => {
+      db.run(
+        'CREATE TABLE IF NOT EXISTS users_pw (username TEXT PRIMARY KEY, passwordHash TEXT);',
+      )
+        .run(
+          'CREATE TABLE IF NOT EXISTS users_otp (email TEXT PRIMARY KEY, otpHash TEXT, attempts INTEGER, lastSentAt INTEGER);',
+        )
+        .run(
+          'CREATE TABLE IF NOT EXISTS sessions (sid TEXT PRIMARY KEY, data TEXT, expiresAt INTEGER);',
+          (err) => {
+            if (err) {
+              console.error(err)
+              return reject(err)
+            }
+            console.log('database initialized')
+            resolve()
+          },
+        )
+    })
+  })
+}
 
 async function createPwUser(email, hash, salt) {
   const passwordHash = `${hash}.${salt}`
@@ -171,6 +182,7 @@ async function deleteSession(sid) {
 }
 
 module.exports = {
+  init,
   createPwUser,
   getPwUser,
   storeOtpHash,

@@ -1,7 +1,7 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
-require('./db')
+const { init } = require('./db')
 
 const app = express()
 const port = 3000
@@ -16,6 +16,8 @@ app.use('/otp', require('./routes/otp'))
 app.use('/otp', require('./routes/otp'))
 app.use('/common', require('./routes/common'))
 
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`)
+init().then(() => {
+  app.listen(port, () => {
+    console.log(`Server is running on port ${port}`)
+  })
 })
