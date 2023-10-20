@@ -13,7 +13,6 @@ app.use(cookieParser())
 // Register routes
 app.use('/password', require('./routes/password'))
 app.use('/otp', require('./routes/otp'))
-app.use('/otp', require('./routes/otp'))
 app.use('/common', require('./routes/common'))
 
 init().then(() => {
