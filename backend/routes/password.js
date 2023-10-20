@@ -21,11 +21,14 @@ router.post('/register', async (req, res) => {
   // **** START CODE HERE ****
 
   // Step 1: Generate salt
+  const salt = generateSalt()
 
   // Step 2: Hash the password using helper function with salt
+  const passwordHash = hashWithSaltManyTimes(password, salt)
 
   // Step 3: Store the username, hash and salt
   // Hint: use `await createPwUser(username, passwordHash, salt)` to store the user
+  await createPwUser(username, passwordHash, salt)
 
   // **** END CODE HERE ****
   return res.json({ message: 'User registered successfully!' })
@@ -54,13 +57,16 @@ router.post('/login', async (req, res) => {
 
   // Step 1: Hash the password using helper function with salt
   // Hint: use `salt` to get the stored salt
+  const newPasswordHash = hashWithSaltManyTimes(password, salt)
 
   // Step 2: Compare the stored hashed password with the provided password
   // Hint: use `passwordHash` to get stored password hash
 
-  // if (password doesnt match) {
-  //   return res.status(401).json({ message: 'Wrong password! Please try again!' })
-  // }
+  if (!areHashesSame(newPasswordHash, passwordHash)) {
+    return res
+      .status(401)
+      .json({ message: 'Wrong password! Please try again!' })
+  }
 
   // **** END CODE HERE ****
 

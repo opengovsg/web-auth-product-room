@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 
-import logo from './assets/otf-logo.png'
+import logo from './assets/totoro.png'
 import './App.css'
 
 function App() {
